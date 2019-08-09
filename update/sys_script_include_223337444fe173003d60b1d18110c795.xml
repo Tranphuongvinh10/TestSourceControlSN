@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_snc_twitterapi.TwitterIntegration</api_name>
+        <client_callable>false</client_callable>
+        <description>Sends a tweet to the provided user token. Must provide both consumer API keys and both access tokens, either as parameters, or in the twitter.* system properties.&#13;
+Returns the executed REST message response.&#13;
+&#13;
+Format:&#13;
+var call_twitter = new x_snc_twitterapi.TwitterIntegration().send_tweet('tweet to send', API_Key, API_Secret_Key, Access_Token, Access_Token_Secret);&#13;
+var response = call_twitter.getBody();&#13;
+&#13;
+Credit for figuring out a lot of the hurdles:&#13;
+-Arnoud Kooi&#13;
+https://www.youtube.com/watch?v=1bhHwhLstmQ</description>
+        <name>TwitterIntegration</name>
+        <script><![CDATA[var TwitterIntegration = Class.create();
+TwitterIntegration.prototype = {
+	initialize: function() {
+	},
+
+	send_tweet: function (message, consumer_key, consumer_secret, access_token, access_token_secret){
+		var oauth_consumer_key = consumer_key || gs.getProperty('x_snc_twitterapi.twitter.consumer.key');
+		var ouath_consumer_secret = consumer_secret || gs.getProperty('x_snc_twitterapi.twitter.consumer.key.secret');
+		var oauth_token = access_token || gs.getProperty('x_snc_twitterapi.twitter.access.token');
+		var oauth_token_secret = access_token_secret || gs.getProperty('x_snc_twitterapi.twitter.access.token.secret');
+		
+		if (!oauth_consumer_key || !ouath_consumer_secret || !oauth_token || !oauth_token_secret)
+			return 'Key or token missing.';
+		
+		var oauth_nonce = Math.random().toString(36).substring(2, 15) +	Math.random().toString(36).substring(2, 15);
+		var oauth_signature_method = 'HMAC-SHA1';
+		var oauth_timestamp = Math.round(new GlideDateTime().getNumericValue() / 1000);
+		var oauth_version = '1.0';
+		var method = 'POST';
+		var endpoint = 'https://api.twitter.com/1.1/statuses/update.json';
+
+		var signature_parameters = 'oauth_consumer_key=' + percentEncode(oauth_consumer_key) + '&' +
+			'oauth_nonce=' + percentEncode(oauth_nonce) + '&' +
+			'oauth_signature_method=HMAC-SHA1&' +
+			'oauth_timestamp=' + oauth_timestamp + '&' +
+			'oauth_token=' + percentEncode(oauth_token) + '&' +
+			'oauth_version=1.0&' +
+			'status=' + percentEncode(message);
+
+		var signature_base_string = 
+			"POST&" +
+			percentEncode(endpoint) + "&" + percentEncode(signature_parameters);
+
+		var signing_key = percentEncode(ouath_consumer_secret) +
+			"&" + percentEncode(oauth_token_secret);
+
+		var encrypted = x_snc_twitterapi.CryptoJS.HmacSHA1(signature_base_string, signing_key);
+		var oauth_signature = x_snc_twitterapi.CryptoJS.enc.Base64.stringify(encrypted);
+
+		var header_string = 'OAuth ' +
+			percentEncode('oauth_consumer_key') + '="' + percentEncode(oauth_consumer_key) + '", ' + 
+			percentEncode('oauth_nonce') + '="' + oauth_nonce + '", ' + 
+			percentEncode('oauth_signature') + '="' + percentEncode(oauth_signature) + '", ' + 
+			percentEncode('oauth_signature_method') + '="HMAC-SHA1", ' + 
+			percentEncode('oauth_timestamp') + '="' + oauth_timestamp + '", ' + 
+			percentEncode('oauth_token') + '="' + percentEncode(oauth_token) + '", ' + 
+			percentEncode('oauth_version') + '="' + percentEncode('1.0') + '"'; 
+
+		var qs = '?oauth_consumer_key=' + oauth_consumer_key + '&' +
+			'oauth_nonce=' + oauth_nonce + '&' +
+			'oauth_signature=' + percentEncode(oauth_signature) + '&' +
+			'oauth_signature_method=HMAC-SHA1&' +
+			'oauth_timestamp=' + oauth_timestamp + '&' +
+			'oauth_token=' + oauth_token + '&' +
+			'oauth_version=1.0&' +
+			'status=' + percentEncode(message);
+		var endpointAndQuery = (endpoint + qs).toString();
+
+		var rm = new sn_ws.RESTMessageV2();
+		rm.setHttpMethod('POST');
+		rm.setLogLevel('all');
+		rm.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		rm.setEndpoint(endpointAndQuery);
+		return rm.execute();
+
+		function percentEncode(inp) {
+			var chara, charCode, i;
+			var encodedString = '';
+
+			for (i = 0; i < inp.length; i++) {
+				chara = inp.charAt(i);
+				if ((chara >= '0' && chara <= '9') ||
+					(chara >= 'A' && chara <= 'Z') ||
+					(chara >= 'a' && chara <= 'z') ||
+					(chara == '-') || (chara == '.') ||
+					(chara == '_') || (chara == '~')) {
+					encodedString += chara;
+				} else {
+					charCode = inp.charCodeAt(i);
+					encodedString += '%' + charCode.toString(16).toUpperCase();
+				}
+			}
+			return encodedString;
+		}
+	},
+
+	type: 'TwitterIntegration'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin-eduque</sys_created_by>
+        <sys_created_on>2019-05-16 22:04:56</sys_created_on>
+        <sys_id>223337444fe173003d60b1d18110c795</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>TwitterIntegration</sys_name>
+        <sys_package display_value="TwitterAPI" source="x_snc_twitterapi">7e1377004fe173003d60b1d18110c75b</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="TwitterAPI">7e1377004fe173003d60b1d18110c75b</sys_scope>
+        <sys_update_name>sys_script_include_223337444fe173003d60b1d18110c795</sys_update_name>
+        <sys_updated_by>admin-eduque</sys_updated_by>
+        <sys_updated_on>2019-05-16 22:15:13</sys_updated_on>
+    </sys_script_include>
+</record_update>

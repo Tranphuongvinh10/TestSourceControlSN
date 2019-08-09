@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_hub_action_instance">
+    <sys_hub_action_instance action="INSERT_OR_UPDATE">
+        <action_inputs/>
+        <action_type display_value="Sampletweet_action">b0ee6887db4333006b42487039961964</action_type>
+        <action_type_parent/>
+        <comment/>
+        <compiled_snapshot/>
+        <display_text/>
+        <flow display_value="Sampletweetflow">e79e6c87db4333006b42487039961915</flow>
+        <order>1</order>
+        <parent_ui_id/>
+        <sys_class_name>sys_hub_action_instance</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-08-08 05:06:10</sys_created_on>
+        <sys_id>31cf200bdb4333006b424870399619f5</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="TwitterAPI" source="x_snc_twitterapi">7e1377004fe173003d60b1d18110c75b</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="TwitterAPI">7e1377004fe173003d60b1d18110c75b</sys_scope>
+        <sys_update_name>sys_hub_action_instance_31cf200bdb4333006b424870399619f5</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-08-08 05:06:10</sys_updated_on>
+        <ui_id>f1128672-3fa6-4ba6-8248-85472dca0716</ui_id>
+    </sys_hub_action_instance>
+    <sys_variable_value action="delete_multiple" query="document_key=31cf200bdb4333006b424870399619f5"/>
+</record_update>
